@@ -47,6 +47,3 @@ def get_response():
 
 # NOTA: El bloque if __name__ == "__main__": con app.run() ha sido eliminado
 # o comentado para el despliegue en producción como Render.
-
-if __name__ == "__main__":
-    app.run(debug=True)
