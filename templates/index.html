@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ page_title }}</title>
+    <style>
+        body { font-family: sans-serif; }
+        #chat-container { width: 500px; margin: 20px auto; border: 1px solid #ccc; padding: 10px; }
+        #chat-log { height: 200px; overflow-y: scroll; padding: 10px; background-color: #f9f9f9; }
+        .user-message { text-align: right; margin-bottom: 5px; color: blue; }
+        .bot-message { text-align: left; margin-bottom: 5px; color: green; }
+        #user-input-container { display: flex; margin-top: 10px; }
+        #user-input { flex-grow: 1; padding: 8px; }
+        #send-button { padding: 8px 15px; }
+        #logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100px; /* Adjust the width as needed */
+            margin-bottom: 10px;
+        }
+        #footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <img id="logo" src="https://citec.com.ec/wp-content/uploads/2024/08/utpl.png" alt="Logo">
+        <h2>{{ page_title }}</h2>
+        <div id="chat-log"></div>
+        <div id="user-input-container">
+            <input type="text" id="user-input" placeholder="{{ input_placeholder }}">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+    <div id="footer">
+        Maestría de Inteligencia Artificial aplicada<br>
+        Tendencias de la Inteligencia Artificial<br>
+        Realizado por: Edwin Guaman | Damián Rosero<br>
+        UTPL
+    </div>
+
+    <script>
+        const chatLog = document.getElementById('chat-log');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                appendMessage('user-message', 'Tu: ' + message);
+                userInput.value = '';
+
+                fetch('/get_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'user_input=' + encodeURIComponent(message),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    appendMessage('bot-message', 'ChatBot: ' + data.response);
+                });
+            }
+        }
+
+        function appendMessage(className, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(className);
+            messageDiv.textContent = text;
+            chatLog.appendChild(messageDiv);
+            chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom
+        }
+    </script>
+</body>
+</html>
